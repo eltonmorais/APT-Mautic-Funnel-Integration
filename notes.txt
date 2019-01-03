@@ -1,0 +1,10 @@
+Implementations
+ * Get sponsor using the FunnelID and Lead
+
+To add another platform integration
+ * Add the fields needed on inc/acf-fields.php
+ * Create the class that extend class.ipn-proccess.php
+ * On get_options get the specific fields You added for that platform
+
+For next version
+ * ipn_save_details() - Save the IPN data on DB
