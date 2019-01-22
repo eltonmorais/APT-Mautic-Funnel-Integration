@@ -224,12 +224,12 @@ class mautic_funnel_integration extends the_whale_framework {
 							
 							$field_content = get_field($id_field,"user_".$user->data->ID);
 							
-							if(empty($field_content)){
+							if($field_content === ""){
 								$field_content = get_user_meta($user->data->ID,$id_field,true);
 							}
 							
 							
-							if(empty($field_content)){
+							if($field_content === ""){
 								continue;
 							}
 						}
@@ -252,7 +252,13 @@ class mautic_funnel_integration extends the_whale_framework {
 				
 				$this->mail_server_id = $_GET['aptFunnelID'];
 				
-				$contacts = $this->connection->get_lead_all();
+				$contacts = null;
+				$count = 0;
+
+				while(empty($contacts) && $count < 10){
+					$contacts = $this->connection->get_lead_all();
+					$count++;
+				}
 				
 				foreach($contacts as $contact){
 					
