@@ -248,8 +248,6 @@ class mautic_funnel_integration extends the_whale_framework {
 				break;
 			case "getLeads":
 				
-				$all_leads = array();
-				
 				$this->mail_server_id = $_GET['aptFunnelID'];
 				
 				$contacts = null;
@@ -259,57 +257,35 @@ class mautic_funnel_integration extends the_whale_framework {
 					$contacts = $this->connection->get_lead_all();
 					$count++;
 				}
+
+				if(empty($contacts)){
+					echo json_encode(array());
+					die();
+				}
 				
 				foreach($contacts as $contact){
-					
+
 					unset($lead);
-					
-					if(strtolower($contact->owner->username) != strtolower($_GET['aptFunnelOwner'])){
-						$user = get_user_by("email",$_GET['aptFunnelOwner']);
-						
-						if(!$user){
-							continue;
-						}
-						
-						if($user->data->user_login != $contact->owner->username){
-							continue;
-						}
+
+					foreach($contact as $k=>$v){
+						$lead[$k] = $v;
 					}
 					
-					foreach($contact->fields->all as $key=>$value){
-						$lead[$key] = $value;
-					}
-					
-					$lead["capital_firstname"] = ucfirst($contact->fields->all->firstname);
-					$lead["capital_lastname"] = ucfirst($contact->fields->all->lastname);
-					$lead["last_activity"] = $contact->lastActive;
-					$lead["last_activity"] = $contact->lastActive;
-					$lead["subscription_date"] = $contact->dateIdentified;
-					$lead["current_stage_name"] = $contact->stage->name;
-					$lead["current_stage_description"] = $contact->stage->description;
-					$lead["current_stage_id"] = "";
+					$lead["capital_firstname"] = ucfirst($contact->firstname);
+					$lead["capital_lastname"] = ucfirst($contact->lastname);
+					$lead["last_activity"] = $contact->last_active;
+					$lead["subscription_date"] = $contact->date_identified;
+					$lead["current_stage_name"] = $contact->name;
+					$lead["current_stage_description"] = $contact->description;
+					$lead["current_stage_id"] = $contact->stage_id;
 					$lead["funnel_id"] = $_GET['aptFunnelID'];
-					$lead["avatar"] = "https://www.gravatar.com/avatar/".md5( strtolower( trim( $contact->fields->all->email )))."?s=200";
-					
-					$query = new \WP_Query(array(
-						'post_type' => 'aptfunnelstage',
-						'post_status' => 'publish',
-						'posts_per_page' => -1,
-					));
-					
-					$posts = $query->posts;
-					
-					foreach($posts as $post){
-						if($_GET['aptFunnelID'] == get_field('mauticfunnelint_email_system_rel',$post->ID) && $contact->stage->id == get_field('mauticfunnelint_stage_id',$post->ID)){
-							$lead["current_stage_id"] = $post->ID;
-							break;
-						}
-					}
-					
+					$lead["avatar"] = "https://www.gravatar.com/avatar/".md5( strtolower( trim( $contact->email )))."?s=200";
+
 					$all_leads[] = $lead;
 				}
 				
-				echo json_encode($all_leads);
+				if(isset($all_leads))
+					echo json_encode($all_leads);
 								
 				break;
 			case "getStageMessages":

@@ -51,29 +51,17 @@ class mautic extends mail_server{
 	public function get_lead_by_id($id){}
 	
 	public function get_lead_all(){
-		//set parameters
-		$this->parameters = array(
-			"search" => "",
-			"start" => 0,
-			"limit" => 1000000000,
-		);
-				
-		$this->api_path = "contacts";
-		$this->request_type = "GET";
-		$result = $this->do_connection();
 		
-		if(count($result->contacts) > 0){
-			return $result->contacts;
+		$sql = "SELECT * FROM {$this->configs['db_prefix']}leads AS l INNER JOIN {$this->configs['db_prefix']}users AS u ON u.id = l.owner_id INNER JOIN {$this->configs['db_prefix']}stages AS s ON l.stage_id = s.id WHERE u.email='".$_GET['aptFunnelOwner']."'";
+
+		$this->db_connection->show_errors($sql);
+		$result = $this->db_connection->get_results($sql);
+		$this->db_connection->print_error();
+
+		if(count($result) > 0){
+			return $result;
 		}
-		
-		//Try with different configs
-		$this->parameters = array();
-		$result = $this->do_connection();
-		
-		if(count($result->contacts) > 0){
-			return $result->contacts;
-		}		
-		
+
 		return false;
 	}
 	

@@ -4,14 +4,14 @@ namespace apt\thewhale;
 
 /**
  * @package APT Mautic Funnel Integration
- * @version 0.13.1
+ * @version 0.13.2
  */
 /*
 Plugin Name: APT Mautic Funnel Integration
 Plugin URI: http://autopilottools.com
 Description: Permite ajustar o conteúdo de cada página de acordo com o usuário que recomendou o acesso.
 Author: Auto Pilot Tools
-Version: 0.13.1
+Version: 0.13.2
 Author URI: http://autopilottools.com/
 */
 
